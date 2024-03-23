@@ -9,9 +9,6 @@ return {
                 italic_comments = true,
                 hide_fillchars = true,
                 borderless_telescope = true,
-                --[[
-                ]]
-				--
 			})
 			vim.cmd("colorscheme cyberdream")
 		end,

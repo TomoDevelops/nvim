@@ -1,5 +1,5 @@
 return {
-	{
+	--[[ {
 		"scottmckendry/cyberdream.nvim",
 		lazy = false,
 		priority = 1000,
@@ -12,15 +12,32 @@ return {
 			})
 			vim.cmd("colorscheme cyberdream")
 		end,
-	},
+	} ,]]
+    {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+                flavour = "macchiato",
+                integrations = {
+                    cmp = true,
+                    gitsigns = true,
+                    harpoon = true,
+                    treesitter = true,
+                    mason = true
+                }
+			})
+			vim.cmd("colorscheme catppuccin")
+		end,
+    },
 	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
-			local cyberdream = require("lualine.themes.cyberdream")
 			require("lualine").setup({
 				options = {
-					theme = cyberdream,
+					theme = "catppuccin",
 				},
 			})
 		end,

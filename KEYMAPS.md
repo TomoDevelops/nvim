@@ -29,7 +29,7 @@ Leader: `Space`
 |-----|------|--------|
 | `<leader>pf` | n | Find files |
 | `<leader>ff` | n | Find files |
-| `<leader>fg` | n | Live grep (search file contents) |
+| `<leader>ps` | n | Live grep (search file contents) |
 | `<leader>fb` | n | Find buffers |
 | `<leader>fh` | n | Help tags |
 | `<leader>ft` | n | Find TODOs |

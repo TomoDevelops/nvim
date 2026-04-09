@@ -42,23 +42,27 @@ vim.g.loaded_netrw = 1
 -- System clipboard
 opt.clipboard = "unnamedplus"
 
--- Native LSP server configs (nvim 0.11+)
-vim.lsp.config("vue_ls", {
-  init_options = {
-    typescript = {
-      tsdk = vim.fn.getcwd() .. "/node_modules/typescript/lib",
-    },
-  },
-  root_markers = { "nuxt.config.ts", "nuxt.config.js", "tsconfig.json" },
+-- Styled borders on LSP floating windows
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "LspFloatBorder", { fg = "#05C3DE" })
+  end,
 })
-vim.lsp.config("ts_ls", {
-  root_markers = { "tsconfig.json", "package.json" },
-})
-vim.lsp.config("lua_ls", {
-  settings = {
-    Lua = {
-      diagnostics = { globals = { "vim" } },
-    },
-  },
-})
-vim.lsp.enable({ "ts_ls", "vue_ls", "lua_ls" })
+vim.api.nvim_set_hl(0, "LspFloatBorder", { fg = "#05C3DE" })
+
+local float_border = {
+  { "╭", "LspFloatBorder" },
+  { "─", "LspFloatBorder" },
+  { "╮", "LspFloatBorder" },
+  { "│", "LspFloatBorder" },
+  { "╯", "LspFloatBorder" },
+  { "─", "LspFloatBorder" },
+  { "╰", "LspFloatBorder" },
+  { "│", "LspFloatBorder" },
+}
+
+local float_opts = { border = float_border, pad_top = 1, pad_bottom = 1 }
+
+vim.diagnostic.config({ float = float_opts })
+
+return { float_border = float_border }

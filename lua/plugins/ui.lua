@@ -15,9 +15,16 @@ return {
     opts = {
       options = {
         theme = "nord",
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
       },
       sections = {
-        lualine_c = { { "filename", path = 1 } },
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff" },
+        lualine_c = { { "filename", path = 1, symbols = { modified = " ●", readonly = " " } } },
+        lualine_x = { "diagnostics" },
+        lualine_y = { "filetype" },
+        lualine_z = { "location" },
       },
     },
   },

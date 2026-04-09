@@ -27,7 +27,8 @@ autocmd("LspAttach", {
 
     map("gd", vim.lsp.buf.definition, "Go to definition")
     map("gr", vim.lsp.buf.references, "Go to references")
-    map("K", vim.lsp.buf.hover, "Hover docs")
+    local float_border = require("config.options").float_border
+    map("K", function() vim.lsp.buf.hover({ border = float_border, pad_top = 1, pad_bottom = 1, pad_left = 1, pad_right = 1 }) end, "Hover docs")
     map("<leader>ca", vim.lsp.buf.code_action, "Code action")
     map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
     map("<leader>d", vim.diagnostic.open_float, "Line diagnostics")

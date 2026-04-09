@@ -49,10 +49,16 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     opts = {
-      ensure_installed = { "lua", "typescript", "tsx", "javascript", "json", "html", "css", "yaml", "markdown" },
+      ensure_installed = { "lua", "vue", "typescript", "tsx", "javascript", "json", "html", "css", "yaml", "markdown" },
       highlight = { enable = true },
       indent = { enable = true },
     },
+  },
+
+  -- Emmet (HTML/CSS expansion)
+  {
+    "mattn/emmet-vim",
+    ft = { "html", "css", "vue", "javascriptreact", "typescriptreact" },
   },
 
   -- Auto pairs
@@ -82,7 +88,9 @@ return {
   -- Git signs in gutter
   {
     "lewis6991/gitsigns.nvim",
-    opts = {},
+    opts = {
+      current_line_blame = true,
+    },
   },
 
   -- TODO/FIXME/HACK highlights
@@ -113,6 +121,26 @@ return {
     keys = {
       { "<leader>gd", "<cmd>DiffviewOpen<CR>", desc = "Diff view" },
       { "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", desc = "File history" },
+      {
+        "<leader>gr",
+        function()
+          local pr_base = vim.trim(vim.fn.system("gh pr view --json baseRefName --jq .baseRefName 2>/dev/null"))
+          if vim.v.shell_error ~= 0 or pr_base == "" then
+            vim.notify("No open PR found for this branch", vim.log.levels.WARN)
+            return
+          end
+          vim.cmd("DiffviewOpen origin/" .. pr_base .. "...HEAD")
+        end,
+        desc = "PR review diff",
+      },
+      {
+        "<leader>gl",
+        function()
+          local base = vim.trim(vim.fn.system("git rev-parse --abbrev-ref origin/HEAD"))
+          vim.cmd("DiffviewFileHistory --range=" .. base .. "...HEAD")
+        end,
+        desc = "PR commit log",
+      },
       { "<leader>gq", "<cmd>DiffviewClose<CR>", desc = "Close diff view" },
     },
     opts = {},
@@ -131,16 +159,16 @@ return {
     event = "BufWritePre",
     opts = {
       formatters_by_ft = {
-        javascript = { "eslint_d", "prettier" },
-        typescript = { "eslint_d", "prettier" },
-        javascriptreact = { "eslint_d", "prettier" },
-        typescriptreact = { "eslint_d", "prettier" },
-        vue = { "eslint_d", "prettier" },
-        css = { "prettier" },
-        html = { "prettier" },
-        json = { "prettier" },
-        yaml = { "prettier" },
-        markdown = { "prettier" },
+        javascript = { "eslint_d", "prettierd" },
+        typescript = { "eslint_d", "prettierd" },
+        javascriptreact = { "eslint_d", "prettierd" },
+        typescriptreact = { "eslint_d", "prettierd" },
+        vue = { "eslint_d", "prettierd" },
+        css = { "prettierd" },
+        html = { "prettierd" },
+        json = { "prettierd" },
+        yaml = { "prettierd" },
+        markdown = { "prettierd" },
         lua = { "stylua" },
       },
       format_on_save = {
@@ -161,8 +189,8 @@ return {
 
       vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end, { desc = "Harpoon add file" })
       vim.keymap.set("n", "<leader>e", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "Harpoon menu" })
-      vim.keymap.set("n", "<C-j>", function() harpoon:list():prev() end, { desc = "Harpoon prev" })
-      vim.keymap.set("n", "<C-k>", function() harpoon:list():next() end, { desc = "Harpoon next" })
+      vim.keymap.set("n", "<M-j>", function() harpoon:list():prev() end, { desc = "Harpoon prev" })
+      vim.keymap.set("n", "<M-k>", function() harpoon:list():next() end, { desc = "Harpoon next" })
     end,
   },
 }

@@ -1,5 +1,5 @@
 return {
-  -- Mason for installing LSP servers
+  -- Mason for installing LSP servers / formatters / linters
   {
     "williamboman/mason.nvim",
     opts = {},
@@ -8,11 +8,20 @@ return {
     "williamboman/mason-lspconfig.nvim",
     dependencies = {
       "williamboman/mason.nvim",
+      "neovim/nvim-lspconfig",
       "hrsh7th/cmp-nvim-lsp",
     },
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "ts_ls", "vue_ls", "lua_ls" },
+        ensure_installed = {
+          "ts_ls",       -- TypeScript / React / React Native
+          "vue_ls",      -- Vue
+          "eslint",      -- Linting for JS/TS/Vue
+          "tailwindcss", -- Tailwind CSS
+          "cssls",       -- CSS
+          "html",        -- HTML
+          "lua_ls",      -- Lua
+        },
       })
 
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -25,6 +34,7 @@ return {
         settings = {
           Lua = {
             diagnostics = { globals = { "vim" } },
+            workspace = { checkThirdParty = false },
           },
         },
       })
@@ -81,7 +91,23 @@ return {
         end,
       })
 
-      vim.lsp.enable({ "lua_ls", "ts_ls", "vue_ls" })
+      vim.lsp.config("eslint", { capabilities = capabilities })
+
+      vim.lsp.config("tailwindcss", {
+        capabilities = capabilities,
+        settings = {
+          tailwindCSS = {
+            classAttributes = { "class", "className", "style", "tw" },
+            experimental = { classRegex = { "tw`([^`]*)" } },
+          },
+        },
+      })
+
+      vim.lsp.config("cssls", { capabilities = capabilities })
+
+      vim.lsp.config("html", { capabilities = capabilities })
+
+      vim.lsp.enable({ "lua_ls", "ts_ls", "vue_ls", "eslint", "tailwindcss", "cssls", "html" })
     end,
   },
 

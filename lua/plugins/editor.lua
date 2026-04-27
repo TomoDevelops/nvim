@@ -45,6 +45,7 @@ return {
       view = {
         width = 40,
       },
+      filters = { dotfiles = false, git_ignored = false },
     },
   },
 
@@ -53,7 +54,10 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     opts = {
-      ensure_installed = { "lua", "vue", "typescript", "tsx", "javascript", "json", "html", "css", "yaml", "markdown" },
+      ensure_installed = {
+        "lua", "typescript", "tsx", "javascript", "json", "html", "css", "yaml", "markdown",
+        "vue", "scss",
+      },
       highlight = { enable = true },
       indent = { enable = true },
     },
@@ -173,6 +177,7 @@ return {
         typescriptreact = { "eslint_d", "prettierd" },
         vue = { "eslint_d", "prettierd" },
         css = { "prettierd" },
+        scss = { "prettierd" },
         html = { "prettierd" },
         json = { "prettierd" },
         yaml = { "prettierd" },

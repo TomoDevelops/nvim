@@ -28,7 +28,7 @@ return {
     keys = {
       { "<leader>pf", "<cmd>Telescope find_files<CR>", desc = "Find files" },
       { "<leader>ff", "<cmd>Telescope find_files<CR>", desc = "Find files" },
-      { "<leader>fg", "<cmd>Telescope live_grep<CR>", desc = "Live grep" },
+      { "<leader>ps", "<cmd>Telescope live_grep<CR>", desc = "Live grep" },
       { "<leader>fb", "<cmd>Telescope buffers<CR>", desc = "Find buffers" },
       { "<leader>fh", "<cmd>Telescope help_tags<CR>", desc = "Help tags" },
     },
@@ -41,7 +41,11 @@ return {
     keys = {
       { "<leader>pv", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
     },
-    opts = {},
+    opts = {
+      view = {
+        width = 40,
+      },
+    },
   },
 
   -- Treesitter (syntax highlighting + textobjects)
@@ -88,8 +92,12 @@ return {
   -- Git signs in gutter
   {
     "lewis6991/gitsigns.nvim",
+    event = "BufReadPost",
     opts = {
       current_line_blame = true,
+    },
+    keys = {
+      { "<leader>hu", "<cmd>Gitsigns reset_hunk<CR>", mode = { "n", "v" }, desc = "Reset hunk" },
     },
   },
 

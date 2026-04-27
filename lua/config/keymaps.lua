@@ -46,5 +46,8 @@ end, { desc = "Toggle Claude terminal" })
 -- Easy exit from terminal mode
 map("t", "<C-\\><C-\\>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
+-- Yank file name
+map("n", "yfn", function() vim.fn.setreg("+", vim.fn.expand("%")) end, { desc = "Yank file name" })
+
 -- Clear search highlight
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "Clear search highlight" })

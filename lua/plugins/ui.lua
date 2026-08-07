@@ -71,6 +71,8 @@ return {
         theme = "nord",
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
+        -- Terminal panes from <leader>tw carry this filetype
+        disabled_filetypes = { statusline = { "twterm" } },
       },
       sections = {
         lualine_a = { "mode" },

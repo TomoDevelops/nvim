@@ -25,23 +25,93 @@ map("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 -- Close current buffer
 map("n", "<leader>x", "<cmd>bd<CR>", { desc = "Close buffer" })
 
--- Toggle Claude terminal
-local claude_buf = nil
-map("n", "<leader>cc", function()
-  if claude_buf and vim.api.nvim_buf_is_valid(claude_buf) then
-    local wins = vim.fn.win_findbuf(claude_buf)
-    if #wins > 0 then
-      vim.api.nvim_win_close(wins[1], true)
+-- Toggle a terminal running `cmd` (empty string = default shell) in a vertical split
+local function terminal_toggle(cmd)
+  local term_buf = nil
+  return function()
+    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+      local wins = vim.fn.win_findbuf(term_buf)
+      if #wins > 0 then
+        vim.api.nvim_win_close(wins[1], true)
+        return
+      end
+      vim.cmd("vsplit")
+      vim.api.nvim_win_set_buf(0, term_buf)
+      vim.cmd("startinsert")
       return
     end
-    vim.cmd("vsplit")
-    vim.api.nvim_win_set_buf(0, claude_buf)
+    vim.cmd(vim.trim("vsplit | terminal " .. cmd))
+    term_buf = vim.api.nvim_get_current_buf()
     vim.cmd("startinsert")
+  end
+end
+
+map("n", "<leader>cc", terminal_toggle("claude"), { desc = "Toggle Claude terminal" })
+map("n", "<leader>tt", terminal_toggle(""), { desc = "Toggle terminal" })
+
+-- Terminal workspace, replacing the current window layout:
+--   +-----------------------+
+--   |         shell         |
+--   +-----------+-----------+
+--   |   shell   |   shell   |
+--   +-----------+-----------+
+--   |        claude         |
+--   +-----------------------+
+local workspace_wins = {}
+local function workspace_is_live()
+  if #workspace_wins == 0 then
+    return false
+  end
+  for _, win in ipairs(workspace_wins) do
+    if not vim.api.nvim_win_is_valid(win) then
+      return false
+    end
+  end
+  return true
+end
+
+map("n", "<leader>tw", function()
+  -- Already open: focus the Claude pane instead of spawning a second instance
+  if workspace_is_live() then
+    vim.api.nvim_set_current_win(workspace_wins[4])
     return
   end
-  vim.cmd("vsplit | terminal claude")
-  claude_buf = vim.api.nvim_get_current_buf()
-end, { desc = "Toggle Claude terminal" })
+
+  vim.cmd("only")
+
+  local top = vim.api.nvim_get_current_win()
+  vim.cmd("belowright split")
+  local mid_left = vim.api.nvim_get_current_win()
+  vim.cmd("belowright split")
+  local bottom = vim.api.nvim_get_current_win()
+  vim.api.nvim_set_current_win(mid_left)
+  vim.cmd("belowright vsplit")
+  local mid_right = vim.api.nvim_get_current_win()
+
+  -- Tagged so lualine can skip these panes (see disabled_filetypes in plugins/ui.lua);
+  -- winhighlight blends the now-empty statusline row into the background
+  local function start(win, cmd)
+    vim.api.nvim_set_current_win(win)
+    vim.cmd(vim.trim("terminal " .. cmd))
+    vim.bo.filetype = "twterm"
+    vim.wo.winhighlight = "StatusLine:Normal,StatusLineNC:Normal"
+    vim.wo.number = false
+    vim.wo.relativenumber = false
+    vim.wo.signcolumn = "no"
+  end
+
+  start(top, "")
+  start(mid_left, "")
+  start(mid_right, "")
+  start(bottom, "claude")
+
+  local rows = vim.o.lines - vim.o.cmdheight - 1
+  vim.api.nvim_win_set_height(top, math.floor(rows * 0.28))
+  vim.api.nvim_win_set_height(bottom, math.floor(rows * 0.36))
+
+  workspace_wins = { top, mid_left, mid_right, bottom }
+  vim.api.nvim_set_current_win(bottom)
+end, { desc = "Open terminal workspace" })
 
 -- Easy exit from terminal mode
 map("t", "<C-\\><C-\\>", "<C-\\><C-n>", { desc = "Exit terminal mode" })

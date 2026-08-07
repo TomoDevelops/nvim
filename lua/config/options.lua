@@ -40,6 +40,18 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_netrw = 1
 
 -- System clipboard
+-- WSL has no native clipboard provider; bridge to Windows via clip.exe / powershell
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = "WslClipboard",
+    copy = { ["+"] = "clip.exe", ["*"] = "clip.exe" },
+    paste = {
+      ["+"] = 'powershell.exe -NoProfile -Command [Console]::Out.Write($(Get-Clipboard -Raw).ToString())',
+      ["*"] = 'powershell.exe -NoProfile -Command [Console]::Out.Write($(Get-Clipboard -Raw).ToString())',
+    },
+    cache_enabled = 0,
+  }
+end
 opt.clipboard = "unnamedplus"
 
 -- Styled borders on LSP floating windows

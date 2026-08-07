@@ -39,6 +39,25 @@ return {
     "shaunsingh/nord.nvim",
     priority = 1000,
     config = function()
+      -- Override the background and foreground colors
+      local bg = "#24273A"
+      local fg = "#CAD3F5"
+      local fg_groups = { Normal = true, NormalNC = true, NormalFloat = true }
+      local function set_background()
+        for _, group in ipairs({ "Normal", "NormalNC", "SignColumn", "EndOfBuffer", "MsgArea", "NormalFloat" }) do
+          local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+          hl.bg = bg
+          if fg_groups[group] then
+            hl.fg = fg
+          end
+          vim.api.nvim_set_hl(0, group, hl)
+        end
+      end
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "nord",
+        callback = set_background,
+      })
+
       vim.cmd.colorscheme("nord")
     end,
   },

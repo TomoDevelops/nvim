@@ -42,13 +42,26 @@ vim.g.loaded_netrw = 1
 -- System clipboard
 -- WSL has no native clipboard provider; bridge to Windows via clip.exe / powershell
 if vim.fn.has("wsl") == 1 then
+  -- Windows stores clipboard text with CRLF, so strip the \r before handing
+  -- lines back to Neovim; otherwise every paste ends in a literal ^M.
+  local function wsl_paste()
+    local text = vim.fn.system({
+      "powershell.exe",
+      "-NoProfile",
+      "-Command",
+      "[Console]::Out.Write($(Get-Clipboard -Raw).ToString())",
+    })
+    text = text:gsub("\r\n", "\n")
+    -- A trailing newline means the text was yanked linewise.
+    local regtype = vim.endswith(text, "\n") and "V" or "v"
+    local body = text:gsub("\n$", "")
+    return { vim.split(body, "\n"), regtype }
+  end
+
   vim.g.clipboard = {
     name = "WslClipboard",
     copy = { ["+"] = "clip.exe", ["*"] = "clip.exe" },
-    paste = {
-      ["+"] = 'powershell.exe -NoProfile -Command [Console]::Out.Write($(Get-Clipboard -Raw).ToString())',
-      ["*"] = 'powershell.exe -NoProfile -Command [Console]::Out.Write($(Get-Clipboard -Raw).ToString())',
-    },
+    paste = { ["+"] = wsl_paste, ["*"] = wsl_paste },
     cache_enabled = 0,
   }
 end

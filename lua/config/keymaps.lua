@@ -52,9 +52,7 @@ map("n", "<leader>tt", terminal_toggle(""), { desc = "Toggle terminal" })
 -- Terminal workspace, replacing the current window layout:
 --   +-----------------------+
 --   |         shell         |
---   +-----------+-----------+
---   |   shell   |   shell   |
---   +-----------+-----------+
+--   +-----------------------+
 --   |        claude         |
 --   +-----------------------+
 local workspace_wins = {}
@@ -73,7 +71,7 @@ end
 map("n", "<leader>tw", function()
   -- Already open: focus the Claude pane instead of spawning a second instance
   if workspace_is_live() then
-    vim.api.nvim_set_current_win(workspace_wins[4])
+    vim.api.nvim_set_current_win(workspace_wins[2])
     return
   end
 
@@ -81,12 +79,7 @@ map("n", "<leader>tw", function()
 
   local top = vim.api.nvim_get_current_win()
   vim.cmd("belowright split")
-  local mid_left = vim.api.nvim_get_current_win()
-  vim.cmd("belowright split")
   local bottom = vim.api.nvim_get_current_win()
-  vim.api.nvim_set_current_win(mid_left)
-  vim.cmd("belowright vsplit")
-  local mid_right = vim.api.nvim_get_current_win()
 
   -- Tagged so lualine can skip these panes (see disabled_filetypes in plugins/ui.lua);
   -- winhighlight blends the now-empty statusline row into the background
@@ -101,15 +94,9 @@ map("n", "<leader>tw", function()
   end
 
   start(top, "")
-  start(mid_left, "")
-  start(mid_right, "")
   start(bottom, "claude")
 
-  local rows = vim.o.lines - vim.o.cmdheight - 1
-  vim.api.nvim_win_set_height(top, math.floor(rows * 0.28))
-  vim.api.nvim_win_set_height(bottom, math.floor(rows * 0.36))
-
-  workspace_wins = { top, mid_left, mid_right, bottom }
+  workspace_wins = { top, bottom }
   vim.api.nvim_set_current_win(bottom)
 end, { desc = "Open terminal workspace" })
 

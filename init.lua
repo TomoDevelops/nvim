@@ -1,3 +1,10 @@
+-- vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+
+if vim.g.vscode then
+  require("config.vscode")
+  return
+end
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
